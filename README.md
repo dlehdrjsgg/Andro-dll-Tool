@@ -1,4 +1,4 @@
-# Andro-DLL-Tools
+# DLL-Tools
 선린인터넷고등학교 Layer7 프로젝트 (2024)
 
 ### Team Members
