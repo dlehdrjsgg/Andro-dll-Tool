@@ -8,16 +8,16 @@ load_dotenv()
 
 def run_il2cpp_dumper(lib_path, metadata_path, package_name):
     il2cpp_dumper_dll = os.getenv("IL2CPP_DUMPER_DLL_PATH")
-    
     if not il2cpp_dumper_dll:
         print("Error: IL2CPP_DUMPER_DLL_PATH is not set in the .env file.")
         return
-    il2cpp_dumper_dll = os.path.join(il2cpp_dumper_dll, "Il2CppDumper.dll")
+
     system = platform.system()
     output_path = os.path.join("output", package_name)
 
     if system == "Darwin":
         try:
+            il2cpp_dumper_dll = os.path.join(il2cpp_dumper_dll, "Il2CppDumper.dll")
             command = ["dotnet", il2cpp_dumper_dll, lib_path, metadata_path]
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
             stdout, stderr = process.communicate(input="\n")  # '\n'을 입력으로 제공하여 'Press any key to exit...' 메시지를 피함
@@ -36,6 +36,7 @@ def run_il2cpp_dumper(lib_path, metadata_path, package_name):
 
     elif system == "Windows":
         try:
+            #il2cpp_dumper_dll = os.path.join(il2cpp_dumper_dll, "Il2CppDumper.dll")
             command = ["Il2CppDumper.exe", lib_path, metadata_path]
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
             stdout, stderr = process.communicate(input="\n")  # '\n'을 입력으로 제공하여 'Press any key to exit...' 메시지를 피함
