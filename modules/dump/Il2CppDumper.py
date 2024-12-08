@@ -7,15 +7,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def run_il2cpp_dumper(lib_path, metadata_path, package_name):
+    il2cpp_dumper_dll = os.getenv("IL2CPP_DUMPER_DLL_PATH")
+    if not il2cpp_dumper_dll:
+        print("Error: IL2CppDumper.dll path not found in .env file.")
+        return
     system = platform.system()
     output_path = os.path.join("output", package_name)
 
     if system == "Darwin":
         try:
-            il2cpp_dumper_dll = os.getenv("IL2CPP_DUMPER_DLL")
-            if not il2cpp_dumper_dll:
-                print("Error: IL2CPP_DUMPER_DLL_PATH is not set in the .env file.")
-                return
             il2cpp_dumper_dll = os.path.join(il2cpp_dumper_dll, "Il2CppDumper.dll")
             command = ["dotnet", il2cpp_dumper_dll, lib_path, metadata_path]
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)

@@ -15,23 +15,23 @@ def run(package_name):
         """)
         
         print("Checking APK files...")
-        print(f"Processing '{package_name}'...")
+        print(f"Processing '{package_name}'...\n")
 
-        print("Parsing metadata...")
+        print("[+] Parsing metadata...")
         metadata = extract_apk_metadata('./input/' + package_name, package_name)
         if metadata:
-            print("Metadata parsed and saved successfully.")
+            print("Metadata parsed and saved successfully.\n")
         else:
-            print("No metadata found or error in parsing.")
+            print("No metadata found or error in parsing.\n")
 
+        print("[+] Parsing binary...")
         binary = extract_apk_binary('./input/' + package_name, package_name)
         if binary:
-            print("Binary parsed and saved successfully.")
+            print("Binary parsed and saved successfully.\n")
         else:
-            print("No binary found or error in parsing.")
+            print("No binary found or error in parsing.\n")
 
-        print("Dumping Il2Cpp data...")
-        print(f"{package_name}")
+        print("[+] Dumping data...")
         run_il2cpp_dumper(f"output/{package_name}/libil2cpp.so", f"output/{package_name}/global-metadata.dat", package_name)
 
 
