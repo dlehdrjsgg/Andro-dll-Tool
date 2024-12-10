@@ -2,9 +2,11 @@ from modules.parser.binary import extract_apk_binary
 from modules.parser.csharp import extract_methods_name, search_methods_by_name, get_offset_by_method_name
 from modules.parser.metadata import extract_apk_metadata
 from modules.dump.Il2CppDumper import run_il2cpp_dumper
+from modules.analyze.modify import modify_binary
+from modules.result.apk import replace_libil2cpp
 import os
 
-def search_and_select_method(package_name, dump_content):
+def search_and_select_method(dump_content):
     results = []
     while True:
         print("\n1. Search method")
@@ -83,15 +85,21 @@ def run(package_name):
             dump_content = f.read()
             extract_methods_name(dump_content)
             
-        selected_method, offset, classname = search_and_select_method(package_name, dump_content)
+        selected_method, offset, classname = search_and_select_method(dump_content)
         if selected_method:
             print(f"\nFinal selection:")
             print(f"Method: {selected_method}")
             print(f"Class: {classname}")
             print(f"Offset: 0x{offset}")
             return selected_method, offset
+        
+        print("[+] modifying binary...")
         hex_string = input("Enter the new value (space-separated hex, e.g., '01 00 A0 E3 1E FF 2F E1'): ").strip()
         modify_binary(f"output/{package_name}/libil2cpp.so", offset, hex_string)
+
+        print("[+] Replacing libil2cpp.so in APK...")
+        replace_libil2cpp(package_name)
+        print("[+] Done.")
 
     except Exception as e:
         print(f"Error processing {package_name}: {str(e)}")
