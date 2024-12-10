@@ -85,17 +85,23 @@ def run(package_name):
             dump_content = f.read()
             extract_methods_name(dump_content)
             
-        selected_method, offset, classname = search_and_select_method(dump_content)
-        if selected_method:
+        while True:
+            selected_method, offset, classname = search_and_select_method(dump_content)
+            if not selected_method:  # If user quit from search_and_select_method
+                break
+                
             print(f"\nFinal selection:")
             print(f"Method: {selected_method}")
             print(f"Class: {classname}")
-            print(f"Offset: 0x{offset}")
-            return selected_method, offset
+            print(f"Offset: 0x{offset}\n")
         
-        print("[+] modifying binary...")
-        hex_string = input("Enter the new value (space-separated hex, e.g., '01 00 A0 E3 1E FF 2F E1'): ").strip()
-        modify_binary(f"output/{package_name}/libil2cpp.so", offset, hex_string)
+            print("[+] modifying binary...")
+            hex_string = input("Enter the new value (space-separated hex, e.g., '01 00 A0 E3 1E FF 2F E1'): ").strip()
+            modify_binary(f"output/{package_name}/libil2cpp.so", offset, hex_string)
+            
+            continue_choice = input("\nDo you want to modify another method? (y/n): ")
+            if continue_choice.lower() != 'y':
+                break
 
         print("[+] Replacing libil2cpp.so in APK...")
         replace_libil2cpp(package_name)
