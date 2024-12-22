@@ -4,12 +4,18 @@ from modules.parser.metadata import extract_apk_metadata
 from modules.dump.Il2CppDumper import run_il2cpp_dumper
 from modules.analyze.modify import modify_binary
 from modules.result.apk import replace_libil2cpp
+from modules.result.signer import sign_apk
+from modules.result.install import install_and_run_apk
 import os
 
 BLUE = '\033[94m'
 RED = '\033[91m'
 RESET = '\033[0m'
 
+keystore_path = os.getenv('KEYSTORE_PATH')
+keystore_password = os.getenv('KEYSTORE_PASSWORD')
+key_alias = os.getenv('KEY_ALIAS')
+key_password = os.getenv('KEY_PASSWORD')
 
 def search_and_select_method(dump_content):
     results = []
@@ -118,6 +124,21 @@ def run(package_name):
 
         print(f"{BLUE}[+]{RESET} Replacing libil2cpp.so in APK...")
         replace_libil2cpp(package_name)
+
+        print(f"{BLUE}[+]{RESET} Signing APK...")
+        sign_apk(
+            f"output/{package_name}/{package_name}.apk",
+            keystore_path,
+            keystore_password,
+            key_alias,
+            key_password,
+            f"output/{package_name}/{os.path.splitext(package_name)[0]}-signed.apk"
+        )
+
+        print(f"{BLUE}[+]{RESET} Installing and running APK...")
+        install_and_run_apk(
+            f"output/{package_name}/{os.path.splitext(package_name)[0]}-signed.apk",
+        )
         print(f"{BLUE}[+]{RESET} Done.")
 
     except Exception as e:
